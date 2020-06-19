@@ -1,0 +1,111 @@
+.home-page {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 500px;
+}
+
+.login-register {
+    display: flex;
+    flex-direction: row;
+    font-size: 30px;
+}
+
+
+.login-register-spacer {
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.no-results-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    margin-top: 50px;
+    text-align: center;
+}
+
+.no-results-image {
+    height: 200px;
+    margin-top: 50px;
+}
+
+.no-results-text {
+    font-size: 50px;
+    font-weight: 100;
+}
+
+.no-results-subtext {
+    font-size: 30px;
+    font-weight: 100;
+}
+
+.dino-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.dino-card {
+    display: flex;
+    height: 400px;
+    margin: 20px;
+    border-radius: 5px;
+    flex-direction: column;
+}
+
+.dino-card .dino-title {
+    display: flex;
+    margin: 10px;
+    justify-content: center;
+    font-size: 20px;
+    height: 30px;
+}
+
+.dino-card .dino-image-container {
+    display: flex;
+    width: 200px;
+    flex: 1 1 auto;
+}
+
+.dino-card .dino-image {
+    display: flex;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.dino-card .dino-rarity {
+    display: flex;
+    margin: 10px;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bolder;
+    height: 27px;
+    background-color: rgba(0,0,0,0.1);
+    border-radius: 5px;
+}
+
+.dino-card .exotic {
+    color: purple
+}
+.dino-card .legendary {
+    color: red
+}
+.dino-card .epic {
+    color: orange
+}
+.dino-card .rare {
+    color: yellow
+}
+
+.dino-card .uncommon {
+    color: yellowgreen
+}
+.dino-card .common {
+    color: green
+}

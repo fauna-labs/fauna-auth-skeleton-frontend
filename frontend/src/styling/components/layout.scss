@@ -1,0 +1,78 @@
+
+
+
+html {
+    min-height: 100%;
+    background: $solitude;
+}
+
+body {
+    margin: 0;
+    --header-height: 50px;
+    --header-title-height: 35px;
+    font-family: 'Roboto';
+    font-weight: 300;
+    color: $rhino;
+    min-height: 100vh;
+}
+
+#root {
+    min-height: 100vh;
+}
+
+.body-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    padding: 0 $grid-unit;
+    width: 100%;
+    max-width: 1400px;
+    min-height: 100vh;
+}
+
+.body-container .data-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex: 1 1 auto;
+    min-height: 800px;
+    justify-content: center;
+}
+
+.body-container .nav{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex: 0 0 auto;
+    height: 50px;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: $bluenav;
+    border-radius: 0px 0px 5px 5px;
+}
+
+.body-container .nav .link-container {
+    display: flex;
+    flex: 1 1 auto;
+    justify-content: center;
+    align-items: center;
+}
+.body-container .nav .link-container a {
+    margin: 5px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 20px;
+    text-transform: uppercase;
+    color: $soft-white;
+    font-weight: lighter;
+}
+
+.body-container .nav .link-container .highlighted {
+    color:$hard-white;
+    font-weight: 300;
+}
