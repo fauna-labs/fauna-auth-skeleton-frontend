@@ -3,7 +3,13 @@ import { createDinoCollection, PopulateDinos } from './dinos'
 import { handleSetupError } from '../helpers/errors'
 import { executeFQL } from '../helpers/fql'
 
-import { CreateBootstrapRole, CreateFnRoleLogin, CreateFnRoleRegister, CreateLoggedInRole } from './roles'
+import {
+  CreateBootstrapRole,
+  CreateFnRoleLogin,
+  CreateFnRoleRegister,
+  CreateLoggedInRole,
+  CreateLoggedInRoleAdmin
+} from './roles'
 import { LoginUDF, RegisterUDF } from './functions'
 
 async function setupDatabase(client) {
@@ -26,6 +32,7 @@ async function setupDatabase(client) {
   // Finally the membership role will give logged in Accounts (literally members from the Accounts collection)
   // access to the protected data.
   await executeFQL(client, CreateLoggedInRole, 'roles - membership role - logged in')
+  await executeFQL(client, CreateLoggedInRoleAdmin, 'roles - membership role - logged in admin role')
 
   // Populate, add some mascottes if the collection was newly made
   // (resDinos will contain the collection if it's newly made, else false)
