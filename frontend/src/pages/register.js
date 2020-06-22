@@ -1,6 +1,7 @@
 import React from 'react'
 import { toast } from 'react-toastify'
 import { faunaQueries } from '../fauna/query-manager'
+import { safeVerifyError } from '../../../fauna-queries/helpers/errors'
 
 // Components
 import Form from './../components/form'
@@ -12,7 +13,20 @@ const handleRegister = (event, username, password) => {
       toast.success('User registered')
     })
     .catch(e => {
-      if (e.error) {
+      // When using functions, the actual error is nested deeper.
+      const underlyingError = safeVerifyError(e, [
+        'requestResult',
+        'responseContent',
+        'errors',
+        0,
+        'cause',
+        0,
+        'description'
+      ])
+      console.log(underlyingError)
+      if (underlyingError) {
+        toast.error(underlyingError)
+      } else if (e.error) {
         toast.error(e.error)
       } else {
         console.log(e)

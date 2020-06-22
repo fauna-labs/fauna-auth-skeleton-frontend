@@ -42,7 +42,7 @@ const Logout = props => {
         </div>
         <div className="form">
           <div className="input-row margin-top-50">
-            <button onClick={e => handleLogout(e, history, sessionContext)} className={'logout' + ' align-right'}>
+            <button onClick={e => handleLogout(e, history, sessionContext)} className={'logout align-right'}>
               Logout
             </button>
           </div>
