@@ -26,4 +26,6 @@ const safeVerifyError = (error, keys) => {
   return error
 }
 
-export { handleSetupError, safeVerifyError }
+const tooManyFaultyLogins = 'too_many_faulty_logins'
+
+export { handleSetupError, safeVerifyError, tooManyFaultyLogins }

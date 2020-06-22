@@ -4,7 +4,7 @@ const faunadb = require('faunadb')
 // Since everything is just functions, this is how easy it is to extend FQL
 
 const q = faunadb.query
-const { Not, Lambda, Var, Collection, Index, Query, Get, Select, Equals } = q
+const { Not, Lambda, Var, Collection, Tokens, Index, Query, Get, Select, Equals } = q
 
 const CreateBootstrapRole = CreateOrUpdateRole({
   name: 'keyrole_bootstrap',
@@ -34,8 +34,20 @@ const CreateFnRoleLogin = CreateOrUpdateRole({
       actions: { read: true }
     },
     {
+      resource: Index('logs_by_action_and_identity'),
+      actions: { read: true }
+    },
+    {
+      resource: Collection('logs'),
+      actions: { create: true, write: true, delete: true, read: true }
+    },
+    {
       resource: Collection('accounts'),
       actions: { read: true }
+    },
+    {
+      resource: Tokens(),
+      actions: { create: true }
     }
   ]
 })

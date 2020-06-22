@@ -1,7 +1,32 @@
 import faunadb from 'faunadb'
-
+import { tooManyFaultyLogins } from './../helpers/errors'
 const q = faunadb.query
-const { Logout, Login, Match, Index, TimeAdd, Now, Var, Get, Let, Select } = q
+const {
+  Logout,
+  Identify,
+  Paginate,
+  Abort,
+  Count,
+  GTE,
+  Match,
+  Index,
+  TimeAdd,
+  Now,
+  Tokens,
+  Var,
+  Get,
+  Let,
+  Select,
+  If,
+  Create,
+  Collection,
+  Do,
+  Lambda,
+  Delete,
+  Equals
+} = q
+
+const MAX_LOGIN_ATTEMPTS = 3
 
 /* LoginAccount
    We can login by searching for the account with the accounts_by_email account which returns references.
@@ -12,14 +37,66 @@ const { Logout, Login, Match, Index, TimeAdd, Now, Var, Get, Let, Select } = q
    is a bad idea of course. 
  */
 function LoginAccount(email, password) {
-  return Let(
+  const LoginFQL = Let(
     {
-      accountRef: Match(Index('accounts_by_email'), email),
-      token: Login(Var('accountRef'), { password: password, ttl: TimeAdd(Now(), 3, 'hour') }),
-      account: Get(Var('accountRef'))
+      accountRef: Select(['data', 0], Paginate(Match(Index('accounts_by_email'), email))),
+      // Instead of logging in, we are going to use Identify to verify the password.
+      // Compared to 'Login' the main difference is that it does not throw an error and does not create a token.
+      validLogin: Identify(Var('accountRef'), password)
     },
-    { account: Var('account'), secret: Select(['secret'], Var('token')) }
+    If(
+      Var('validLogin'),
+      // If the login was valid, we just continue and create a token.
+      Let(
+        {
+          account: Get(Var('accountRef')),
+          token: Create(Tokens(), { ttl: TimeAdd(Now(), 3, 'hours'), instance: Var('accountRef') }),
+          secret: Select(['secret'], Var('token'))
+        },
+        {
+          secret: Var('secret'),
+          account: Var('account')
+        }
+      ),
+      // If not, we return false
+      false
+    )
   )
+
+  // Let's wrap some other functionality around the login.
+  const BlockThreeFaultyLogins = Do(
+    If(
+      GTE(Count(Match(Index('logs_by_action_and_identity'), 'faulty_login', email)), MAX_LOGIN_ATTEMPTS),
+      // Abort if exceeded
+      Abort(tooManyFaultyLogins),
+      // Else, just continue as usual!
+      Let(
+        {
+          login: LoginFQL
+        },
+        Do(
+          If(
+            Equals(false, Var('login')),
+            // if the login is faulty, we'll add a log entry
+            Create(Collection('logs'), {
+              data: {
+                action: 'faulty_login',
+                identity: email
+              }
+            }),
+            // Else, we will clean up the faulty_login logs
+            q.Map(
+              Paginate(Match(Index('logs_by_action_and_identity'), 'faulty_login', email)),
+              Lambda(['logRef'], Delete(Var('logRef')))
+            )
+          ),
+          Var('login')
+        )
+      )
+    )
+  )
+
+  return BlockThreeFaultyLogins
 }
 /* LogoutAccount
    logging out is simple, we know already (via the token) who is connected. 

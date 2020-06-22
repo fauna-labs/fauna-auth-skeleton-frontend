@@ -11,6 +11,7 @@ import {
   CreateLoggedInRoleAdmin
 } from './roles'
 import { LoginUDF, RegisterUDF } from './functions'
+import { createLogsCollection } from './logs'
 
 async function setupDatabase(client) {
   const resAccounts = await handleSetupError(
@@ -18,6 +19,8 @@ async function setupDatabase(client) {
     'collections/indexes - accounts collection'
   )
   const resDinos = await handleSetupError(createDinoCollection(client), 'collections/indexes - dinos collection')
+
+  await handleSetupError(createLogsCollection(client), 'collections/indexes - logs collection')
 
   // Before we define functions we need to define the roles that will be assigned to them.
   await executeFQL(client, CreateFnRoleLogin, 'roles - function role - login')

@@ -27,10 +27,14 @@ class QueryManager {
   // Fauna query from the backend and send use the token + set a httpOnly cookie for refreshing the token
   login(email, password) {
     return this.client.query(Call(q.Function('login'), email, password)).then(res => {
-      this.client = new faunadb.Client({
-        secret: res.secret
-      })
-      return res.account
+      if (res) {
+        this.client = new faunadb.Client({
+          secret: res.secret
+        })
+        return res.account
+      } else {
+        return res
+      }
     })
   }
 
