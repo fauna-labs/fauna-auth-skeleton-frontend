@@ -27,5 +27,6 @@ const safeVerifyError = (error, keys) => {
 }
 
 const tooManyFaultyLogins = 'too_many_faulty_logins'
+const rateLimiting = 'rate_limiting'
 
-export { handleSetupError, safeVerifyError, tooManyFaultyLogins }
+export { handleSetupError, safeVerifyError, tooManyFaultyLogins, rateLimiting }

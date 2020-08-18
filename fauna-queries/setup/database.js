@@ -8,9 +8,9 @@ import {
   CreateFnRoleLogin,
   CreateFnRoleRegister,
   CreateLoggedInRole,
-  CreateLoggedInRoleAdmin
+  CreateFnRoleGetAllDinos
 } from './roles'
-import { LoginUDF, RegisterUDF } from './functions'
+import { LoginUDF, RegisterUDF, GetAllDinosUDF } from './functions'
 import { createLogsCollection } from './logs'
 
 async function setupDatabase(client) {
@@ -25,17 +25,18 @@ async function setupDatabase(client) {
   // Before we define functions we need to define the roles that will be assigned to them.
   await executeFQL(client, CreateFnRoleLogin, 'roles - function role - login')
   await executeFQL(client, CreateFnRoleRegister, 'roles - function role - register')
+  await executeFQL(client, CreateFnRoleGetAllDinos, 'roles - function role - get all dinos')
 
   // Define the functions we will use
   await executeFQL(client, LoginUDF, 'functions - login')
   await executeFQL(client, RegisterUDF, 'functions - register')
+  await executeFQL(client, GetAllDinosUDF, 'functions - get all dinos')
 
   // Now that we have defined the functions, the bootstrap role will give access to these functions.
   await executeFQL(client, CreateBootstrapRole, 'roles - normal - bootstrap')
   // Finally the membership role will give logged in Accounts (literally members from the Accounts collection)
   // access to the protected data.
   await executeFQL(client, CreateLoggedInRole, 'roles - membership role - logged in')
-  await executeFQL(client, CreateLoggedInRoleAdmin, 'roles - membership role - logged in admin role')
 
   // Populate, add some mascottes if the collection was newly made
   // (resDinos will contain the collection if it's newly made, else false)

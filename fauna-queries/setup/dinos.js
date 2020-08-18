@@ -1,12 +1,57 @@
 import { DeleteIfExists, IfNotExists } from './../helpers/fql'
 const faunadb = require('faunadb')
 const q = faunadb.query
-const { CreateCollection, Collection, Create, Do } = q
+const { CreateCollection, Collection, Create, Do, Query, If, Equals, Select, Var, Lambda, CreateIndex, Not, Index } = q
 
 const CreateDinosCollection = CreateCollection({ name: 'dinos' })
 
+const CreatePublicDinosIndex = CreateIndex({
+  name: 'all_public_dinos',
+  source: {
+    collection: Collection('dinos'),
+    fields: {
+      publicRefs: Query(
+        Lambda(
+          'dino',
+          // only common dinos are public, if we return null here it won't be in the index.
+          If(Equals(Select(['data', 'rarity'], Var('dino')), 'common'), Select(['ref'], Var('dino')), null)
+        )
+      )
+    }
+  },
+  values: [
+    {
+      binding: 'publicRefs'
+    }
+  ]
+})
+
+const CreateNormalDinosIndex = CreateIndex({
+  name: 'all_normal_dinos',
+  source: {
+    collection: Collection('dinos'),
+    fields: {
+      normalRefs: Query(
+        Lambda(
+          'dino',
+          // only legendary dinos are hidden from non-admin users, if we return null here it won't be in the index.
+          If(Not(Equals(Select(['data', 'rarity'], Var('dino')), 'legendary')), Select(['ref'], Var('dino')), null)
+        )
+      )
+    }
+  },
+  values: [
+    {
+      binding: 'normalRefs'
+    }
+  ]
+})
+
 async function createDinoCollection(client) {
-  return await client.query(IfNotExists(Collection('dinos'), CreateDinosCollection))
+  const res = await client.query(IfNotExists(Collection('dinos'), CreateDinosCollection))
+  await client.query(IfNotExists(Index('all_public_dinos'), CreatePublicDinosIndex))
+  await client.query(IfNotExists(Index('all_normal_dinos'), CreateNormalDinosIndex))
+  return res
 }
 
 async function deleteDinoCollection(client) {

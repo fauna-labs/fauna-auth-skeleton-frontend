@@ -1,10 +1,11 @@
 import React, { useEffect, useContext, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import Loading from '../components/states/loading'
-
+import { toast } from 'react-toastify'
 import { faunaQueries } from '../fauna/query-manager'
 
 import SessionContext from '../context/session'
+import { safeVerifyError, rateLimiting } from '../../../fauna-queries/helpers/errors'
 
 const Home = () => {
   const [dinos, setDinos] = useState(null)
@@ -18,15 +19,23 @@ const Home = () => {
 
   useEffect(() => {
     setLoading(true)
-    faunaQueries.getDinos().then(res => {
-      if (res !== false) {
-        setDinos(res)
-        setLoading(false)
-        history.push('/')
-      } else {
-        console.log('do something if no data?')
-      }
-    })
+    faunaQueries
+      .getDinos()
+      .then(res => {
+        if (res !== false) {
+          setDinos(res)
+          setLoading(false)
+          history.push('/')
+        } else {
+          console.log('do something if no data?')
+        }
+      })
+      .catch(e => {
+        const codeAndError = safeVerifyError(e, ['requestResult', 'responseContent', 'errors', 0, 'cause', 0])
+        if (codeAndError && codeAndError.code === 'transaction aborted' && codeAndError.description === rateLimiting) {
+          toast.error('You are reloading too fast')
+        }
+      })
   }, [user, history])
 
   if (loading) {

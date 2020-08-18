@@ -4,7 +4,7 @@ const faunadb = require('faunadb')
 // Since everything is just functions, this is how easy it is to extend FQL
 
 const q = faunadb.query
-const { Not, Lambda, Var, Collection, Tokens, Index, Query, Get, Select, Equals } = q
+const { Not, Lambda, Var, Collection, Tokens, Index, Query, Get, Select, Equals, If, Identity, HasIdentity } = q
 
 const CreateBootstrapRole = CreateOrUpdateRole({
   name: 'keyrole_bootstrap',
@@ -18,10 +18,8 @@ const CreateBootstrapRole = CreateOrUpdateRole({
       actions: { call: true }
     },
     {
-      resource: Collection('dinos'),
-      actions: {
-        read: Query(Lambda(['dinoReference'], Equals(Select(['data', 'rarity'], Get(Var('dinoReference'))), 'common')))
-      }
+      resource: q.Function('get_all_dinos'),
+      actions: { call: true }
     }
   ]
 })
@@ -62,32 +60,47 @@ const CreateFnRoleRegister = CreateOrUpdateRole({
   ]
 })
 
-const CreateLoggedInRole = CreateOrUpdateRole({
-  name: 'membershiprole_loggedin',
-  membership: [{ resource: Collection('accounts') }],
+const CreateFnRoleGetAllDinos = CreateOrUpdateRole({
+  name: 'functionrole_get_all_dinos',
   privileges: [
+    {
+      resource: Collection('logs'),
+      actions: { create: true, write: true, delete: true, read: true }
+    },
+    {
+      resource: Index('logs_by_action_and_identity_ordered_by_ts'),
+      actions: { read: true }
+    },
+
+    // since we can only bind one role to a function, we can't use membership here.
+    // We still have two options though:
+    // - Base our logic on the Identity() in the role privileges.
+    // - Base our logic on the Identity() in the User Defined Function itself.
+    // In this case, we'll write it in the User Defined Function instead, that way
+    // we can use indexes to do it which is a bit less flexible but much more efficient (see ../queries/dinos.js)
     {
       resource: Collection('dinos'),
       actions: {
-        read: Query(
-          Lambda(['dinoReference'], Not(Equals(Select(['data', 'rarity'], Get(Var('dinoReference'))), 'legendary')))
-        )
+        read: true
       }
-    }
-  ]
-})
-
-const CreateLoggedInRoleAdmin = CreateOrUpdateRole({
-  name: 'membershiprole_loggedin_admin',
-  membership: [
+    },
+    // we'll need to get the Identity to branch on so the function needs access to accounts.
     {
       resource: Collection('accounts'),
-      predicate: Query(Lambda(['accountRef'], Equals(Select(['data', 'type'], Get(Var('accountRef'))), 'admin')))
-    }
-  ],
-  privileges: [
+      actions: {
+        read: true
+      }
+    },
+    // and needs access to the index that contains only normal dinos
     {
-      resource: Collection('dinos'),
+      resource: Index('all_normal_dinos'),
+      actions: {
+        read: true
+      }
+    },
+    // and needs access to the index that contains only public dinos
+    {
+      resource: Index('all_public_dinos'),
       actions: {
         read: true
       }
@@ -95,4 +108,15 @@ const CreateLoggedInRoleAdmin = CreateOrUpdateRole({
   ]
 })
 
-export { CreateBootstrapRole, CreateFnRoleLogin, CreateFnRoleRegister, CreateLoggedInRole, CreateLoggedInRoleAdmin }
+const CreateLoggedInRole = CreateOrUpdateRole({
+  name: 'membershiprole_loggedin',
+  membership: [{ resource: Collection('accounts') }],
+  privileges: [
+    {
+      resource: q.Function('get_all_dinos'),
+      actions: { call: true }
+    }
+  ]
+})
+
+export { CreateBootstrapRole, CreateFnRoleLogin, CreateFnRoleGetAllDinos, CreateFnRoleRegister, CreateLoggedInRole }

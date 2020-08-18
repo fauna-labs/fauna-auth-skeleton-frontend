@@ -1,7 +1,6 @@
 import faunadb from 'faunadb'
 
-import { GetAllDinos } from './../../../fauna-queries/queries/dinos'
-import { LogoutAccount } from './../../../fauna-queries/queries/auth-login'
+import { LogoutAccount } from '../../../fauna-queries/queries/auth-login'
 
 const q = faunadb.query
 const { Call } = q
@@ -28,6 +27,7 @@ class QueryManager {
   login(email, password) {
     return this.client.query(Call(q.Function('login'), email, password)).then(res => {
       if (res) {
+        console.log('client set', res.secret)
         this.client = new faunadb.Client({
           secret: res.secret
         })
@@ -52,8 +52,8 @@ class QueryManager {
     })
   }
 
-  getDinos(handle) {
-    return this.client.query(GetAllDinos)
+  getDinos() {
+    return this.client.query(Call(q.Function('get_all_dinos')))
   }
 
   async postData(url, data = {}) {
