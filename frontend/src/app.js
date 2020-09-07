@@ -8,6 +8,7 @@ import Logout from './pages/logout'
 
 import Layout from './components/layout'
 import { SessionProvider, sessionReducer } from './context/session'
+import Reset from './pages/reset'
 
 const App = () => {
   const [state, dispatch] = React.useReducer(sessionReducer, { user: null })
@@ -24,6 +25,9 @@ const App = () => {
               </Route>
               <Route exact path="/accounts/register">
                 <Register />
+              </Route>
+              <Route exact path="/accounts/reset">
+                <Reset />
               </Route>
               <Route exact path="/accounts/logout">
                 <Logout />

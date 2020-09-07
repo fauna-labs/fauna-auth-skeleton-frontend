@@ -7,10 +7,11 @@ import {
   CreateBootstrapRole,
   CreateFnRoleLogin,
   CreateFnRoleRegister,
+  CreateFnRoleChangePassword,
   CreateLoggedInRole,
   CreateFnRoleGetAllDinos
 } from './roles'
-import { LoginUDF, RegisterUDF, GetAllDinosUDF } from './functions'
+import { LoginUDF, RegisterUDF, GetAllDinosUDF, ChangePasswordUDF } from './functions'
 import { createLogsCollection } from './logs'
 
 async function setupDatabase(client) {
@@ -26,10 +27,12 @@ async function setupDatabase(client) {
   await executeFQL(client, CreateFnRoleLogin, 'roles - function role - login')
   await executeFQL(client, CreateFnRoleRegister, 'roles - function role - register')
   await executeFQL(client, CreateFnRoleGetAllDinos, 'roles - function role - get all dinos')
+  await executeFQL(client, CreateFnRoleChangePassword, 'roles - function role - change password')
 
   // Define the functions we will use
   await executeFQL(client, LoginUDF, 'functions - login')
   await executeFQL(client, RegisterUDF, 'functions - register')
+  await executeFQL(client, ChangePasswordUDF, 'functions - change password')
   await executeFQL(client, GetAllDinosUDF, 'functions - get all dinos')
 
   // Now that we have defined the functions, the bootstrap role will give access to these functions.
@@ -53,6 +56,8 @@ async function updateFunctions(client) {
   // Both are wrapped in our wrapper (CreateOrUpdateFunction) so they will just update if they already exist.
   await executeFQL(client, LoginUDF, 'functions - login')
   await executeFQL(client, RegisterUDF, 'functions - register')
+  await executeFQL(client, ChangePasswordUDF, 'functions - change password')
+  await executeFQL(client, GetAllDinosUDF, 'functions - get all dinos')
 }
 
 export { setupDatabase, updateFunctions }

@@ -4,6 +4,7 @@ import { RegisterAccount } from './../queries/auth-register'
 import { CreateOrUpdateFunction } from './../helpers/fql'
 import { AddRateLimiting } from '../queries/rate-limiting'
 import { GetAllDinos } from '../queries/dinos'
+import { ChangePassword } from '../queries/auth-reset'
 
 const faunadb = require('faunadb')
 const q = faunadb.query
@@ -19,6 +20,12 @@ const LoginUDF = CreateOrUpdateFunction({
   name: 'login',
   body: Query(Lambda(['email', 'password'], LoginAccount(Var('email'), Var('password')))),
   role: Role('functionrole_login')
+})
+
+const ChangePasswordUDF = CreateOrUpdateFunction({
+  name: 'change_password',
+  body: Query(Lambda(['password', 'newpassword'], ChangePassword(Var('password'), Var('newpassword')))),
+  role: Role('functionrole_change_password')
 })
 
 const GetAllDinosUDF = CreateOrUpdateFunction({
@@ -42,4 +49,4 @@ const GetAllDinosUDF = CreateOrUpdateFunction({
   role: Role('functionrole_get_all_dinos')
 })
 
-export { RegisterUDF, LoginUDF, GetAllDinosUDF }
+export { RegisterUDF, LoginUDF, ChangePasswordUDF, GetAllDinosUDF }

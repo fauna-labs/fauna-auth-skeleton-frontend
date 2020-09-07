@@ -19,6 +19,10 @@ const links = [
   {
     link: '/accounts/logout',
     name: 'Logout'
+  },
+  {
+    link: '/accounts/reset',
+    name: 'Reset'
   }
 ]
 

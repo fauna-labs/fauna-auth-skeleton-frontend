@@ -4,6 +4,8 @@ import PropTypes from 'prop-types'
 const Form = props => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [repeatedPassword, setRepeatPassword] = useState('')
 
   const handleChangeUserName = event => {
     setUsername(event.target.value)
@@ -13,12 +15,35 @@ const Form = props => {
     setPassword(event.target.value)
   }
 
+  const handleChangeNewPassword = event => {
+    setNewPassword(event.target.value)
+  }
+
+  const handleChangeRepeatPassword = event => {
+    setRepeatPassword(event.target.value)
+  }
+
   function renderFields() {
+    // Normally I would refactor this by passing the props instead :)
     return (
       <React.Fragment>
-        {renderInputField('Email', username, 'text', e => handleChangeUserName(e), 'username')}
-        {props.formType === 'register' || props.formType === 'login'
+        {props.formType !== 'reset'
+          ? renderInputField('Email', username, 'text', e => handleChangeUserName(e), 'username')
+          : null}
+        {props.formType === 'register' || props.formType === 'login' || props.formType === 'reset'
           ? renderInputField('Password', password, 'password', e => handleChangePassword(e), 'current-password')
+          : null}
+        {props.formType === 'reset'
+          ? renderInputField('New Password', newPassword, 'password', e => handleChangeNewPassword(e), 'new-password')
+          : null}
+        {props.formType === 'reset'
+          ? renderInputField(
+              'Repeat Password',
+              repeatedPassword,
+              'password',
+              e => handleChangeRepeatPassword(e),
+              'new-password'
+            )
           : null}
       </React.Fragment>
     )
@@ -26,7 +51,7 @@ const Form = props => {
 
   function renderForm() {
     return (
-      <form className="form" onSubmit={e => props.handleSubmit(e, username, password)}>
+      <form className="form" onSubmit={e => props.handleSubmit(e, username, password, newPassword, repeatedPassword)}>
         {renderFields()}
         <div className="input-row margin-top-50">
           <button className={props.formType + ' align-right'}> {props.formType} </button>
@@ -49,7 +74,7 @@ const renderInputField = (name, value, type, fun, autocomplete) => {
   const lowerCaseName = name.toLowerCase()
   return (
     <div className="input-row">
-      <label htmlFor="{lowerCaseName}" className="input-row-column">
+      <label htmlFor="{lowerCaseName}" className="input-row-column input-row-label">
         {name}
       </label>
       <input

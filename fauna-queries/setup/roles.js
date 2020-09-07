@@ -60,6 +60,18 @@ const CreateFnRoleRegister = CreateOrUpdateRole({
   ]
 })
 
+// We can limit this role much more but since it's only meant to give permissions to a functions
+// we'll keep it simple. For more advanced and super fine-grained roles, look at the backend-based branches.
+const CreateFnRoleChangePassword = CreateOrUpdateRole({
+  name: 'functionrole_change_password',
+  privileges: [
+    {
+      resource: Collection('accounts'),
+      actions: { write: true }
+    }
+  ]
+})
+
 const CreateFnRoleGetAllDinos = CreateOrUpdateRole({
   name: 'functionrole_get_all_dinos',
   privileges: [
@@ -115,8 +127,19 @@ const CreateLoggedInRole = CreateOrUpdateRole({
     {
       resource: q.Function('get_all_dinos'),
       actions: { call: true }
+    },
+    {
+      resource: q.Function('change_password'),
+      actions: { call: true }
     }
   ]
 })
 
-export { CreateBootstrapRole, CreateFnRoleLogin, CreateFnRoleGetAllDinos, CreateFnRoleRegister, CreateLoggedInRole }
+export {
+  CreateBootstrapRole,
+  CreateFnRoleLogin,
+  CreateFnRoleGetAllDinos,
+  CreateFnRoleRegister,
+  CreateFnRoleChangePassword,
+  CreateLoggedInRole
+}
