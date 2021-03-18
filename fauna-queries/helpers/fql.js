@@ -12,7 +12,7 @@ function executeFQL(client, FQL, log) {
 
 // Some minor FQL extensions to make our live easier
 function DeleteIfExists(ref) {
-  return If(Exists(ref), false, Delete(ref))
+  return If(Exists(ref), Delete(ref), false)
 }
 
 function IfNotExists(ref, FqlCode) {
