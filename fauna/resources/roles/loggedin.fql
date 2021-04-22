@@ -8,7 +8,7 @@ CreateRole({
   ],
   privileges: [
     {
-      resource: Function('get_all_dinos'),
+      resource: Function('get_all_dinos_rate_limited'),
       actions: {
         call: true
       }

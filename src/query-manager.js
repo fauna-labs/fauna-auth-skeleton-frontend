@@ -21,14 +21,15 @@ class QueryManager {
   // Calling the login endpoint which will run the login
   // Fauna query from the backend and send use the token + set a httpOnly cookie for refreshing the token
   login(email, password) {
-    return this.client.query(Call(q.Function('login'), email, password)).then(res => {
-      if (res) {
+    return this.client.query(Call(q.Function('login_call_limited'), email, password)).then(res => {
+      console.log(res)
+      if (res.token) {
         this.client = new fauna.Client({
           secret: res.token.secret
         })
         return res.account
       } else {
-        return res
+        return false
       }
     })
   }
@@ -52,7 +53,7 @@ class QueryManager {
   }
 
   getDinos() {
-    return this.client.query(Call(q.Function('get_all_dinos')))
+    return this.client.query(Call(q.Function('get_all_dinos_rate_limited')))
   }
 
   async postData(url, data = {}) {

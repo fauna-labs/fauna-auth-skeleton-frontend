@@ -1,0 +1,17 @@
+Update(Role("loggedin"), {
+  membership: [{
+    resource: Collection("accounts")
+  }],
+  privileges: [{
+    resource: Function("get_all_dinos_rate_limited"),
+    actions: {
+      call: true
+    }
+  }, {
+    resource: Function("logout"),
+    actions: {
+      call: true
+    }
+  }],
+  data: null
+})

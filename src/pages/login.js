@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'
 
 import SessionContext from './../context/session'
 import { faunaQueries } from '../query-manager'
-import { tooManyFaultyLogins, safeVerifyError } from '../helpers/errors'
+import { safeVerifyError } from '../helpers/errors'
 
 // Components
 import Form from '../components/form'
@@ -23,18 +23,14 @@ const handleLogin = (event, username, password, history, sessionContext) => {
     })
     .catch(e => {
       // When using functions, the actual error is nested deeper.
-      const codeAndError = safeVerifyError(e, ['requestResult', 'responseContent', 'errors', 0, 'cause', 0])
-      console.log(codeAndError)
-      if (
-        codeAndError &&
-        codeAndError.code === 'transaction aborted' &&
-        codeAndError.description === tooManyFaultyLogins
-      ) {
+      const codeAndError = safeVerifyError(e, ['requestResult', 'responseContent', 'errors', 0, 'cause', 0, 'cause', 0])
+      if (codeAndError && codeAndError.code === 'transaction aborted') {
         // It might not be a good idea to tell the user that the account is blocked
         // since that gives an attacker the means to determine which e-mails exist in your system.
         // This also means that you probably want to return a custom error from the login UDF.
-        // We'll see how to do that in the node example! We'll show the error her as an example though.
-        toast.error('Account blocked (dont do this, its an example')
+        // We'll see how to do that in the node example! We'll show the error here as an example though.
+        // Ideally you would modify the call_limit to return false to hide instead of Aborting.
+        toast.error('Account blocked (dont show this, its an example)')
       } else if (e.error) {
         toast.error(e.error)
       } else {

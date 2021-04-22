@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import { faunaQueries } from '../query-manager'
 
 import SessionContext from '../context/session'
-import { safeVerifyError, rateLimiting } from '../helpers/errors'
+import { safeVerifyError } from '../helpers/errors'
 
 const Home = () => {
   const [dinos, setDinos] = useState(null)
@@ -32,9 +32,19 @@ const Home = () => {
       })
       .catch(e => {
         console.log(e)
-        const codeAndError = safeVerifyError(e, ['requestResult', 'responseContent', 'errors', 0, 'cause', 0])
-        if (codeAndError && codeAndError.code === 'transaction aborted' && codeAndError.description === rateLimiting) {
-          toast.error('You are reloading too fast')
+        const codeAndError = safeVerifyError(e, [
+          'requestResult',
+          'responseContent',
+          'errors',
+          0,
+          'cause',
+          0,
+          'cause',
+          0
+        ])
+        console.log(codeAndError)
+        if (codeAndError && codeAndError.code === 'transaction aborted') {
+          toast.error('You are doing too many calls')
         } else {
           setLoading(false)
         }

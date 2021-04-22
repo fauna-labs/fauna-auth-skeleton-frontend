@@ -1,0 +1,25 @@
+Update(Function("ratelimit"), {
+  body: Query(Lambda(["action", "identifier", "calls", "perMilliSeconds"], Let([{
+    logsPage: Paginate(Match(Index("access_logs_by_action_and_identity_ordered_by_ts"), [Var("action"), Var("identifier")]), {
+      size: Var("calls")
+    })
+  }], If(Or(IsEmpty(Var("logsPage")), LT(Count(Select(["data"], Var("logsPage"))), Var("calls"))), Do(Create(Collection("access_logs"), {
+    data: {
+      action: Var("action"),
+      identity: Var("identifier")
+    }
+  }), true), Let([{
+    timestamp: Select(["data", Subtract(Var("calls"), 1)], Var("logsPage"))
+  }, {
+    time: Epoch(Var("timestamp"), "microseconds")
+  }, {
+    ageInMs: TimeDiff(Var("time"), Now(), "milliseconds")
+  }], If(GTE(Var("ageInMs"), Var("perMilliSeconds")), Do(Create(Collection("access_logs"), {
+    data: {
+      action: Var("action"),
+      identity: Var("identifier")
+    }
+  }), true), Abort("ERROR_RATE_LIMIT"))))))),
+  role: "server",
+  data: null
+})
