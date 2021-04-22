@@ -1,0 +1,5 @@
+CreateFunction({
+  name: "get_all_dinos_rate_limited",
+  body: Query(Lambda([], Do(Call("ratelimit", ["get_dinos", If(HasIdentity(), Identity(), "anonymous"), If(HasIdentity(), 2, 10), 60000]), Call("get_all_dinos", [])))),
+  role: "server"
+})

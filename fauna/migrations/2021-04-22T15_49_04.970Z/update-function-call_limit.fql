@@ -1,0 +1,14 @@
+Update(Function("call_limit"), {
+  body: Query(Lambda(["action", "identifier", "calls"], Let([{
+    logsPage: Paginate(Match(Index("access_logs_by_action_and_identity_ordered_by_ts_and_ref"), [Var("action"), Var("identifier")]), {
+      size: Var("calls")
+    })
+  }], If(Or(IsEmpty(Var("logsPage")), LT(Count(Select(["data"], Var("logsPage"))), Var("calls"))), Do(Create(Collection("access_logs"), {
+    data: {
+      action: Var("action"),
+      identity: Var("identifier")
+    }
+  }), true), Abort("ERROR_CALL_LIMIT"))))),
+  role: "server",
+  data: null
+})

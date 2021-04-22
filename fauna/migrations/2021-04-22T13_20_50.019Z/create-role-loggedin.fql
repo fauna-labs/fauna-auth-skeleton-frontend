@@ -1,0 +1,17 @@
+CreateRole({
+  name: "loggedin",
+  membership: [{
+    resource: Collection("accounts")
+  }],
+  privileges: [{
+    resource: Collection("dinos"),
+    actions: {
+      read: true
+    }
+  }, {
+    resource: Function("logout"),
+    actions: {
+      call: true
+    }
+  }]
+})

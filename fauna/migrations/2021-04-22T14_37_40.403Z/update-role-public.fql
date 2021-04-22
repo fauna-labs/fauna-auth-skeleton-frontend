@@ -1,0 +1,20 @@
+Update(Role("public"), {
+  privileges: [{
+    resource: Function("register"),
+    actions: {
+      call: true
+    }
+  }, {
+    resource: Function("login"),
+    actions: {
+      call: true
+    }
+  }, {
+    resource: Function("get_all_dinos_rate_limited"),
+    actions: {
+      call: true
+    }
+  }],
+  data: null,
+  membership: null
+})

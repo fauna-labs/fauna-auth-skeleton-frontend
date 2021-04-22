@@ -1,0 +1,7 @@
+CreateFunction({
+  name: "login_call_limited",
+  body: Query(Lambda(["email", "password"], Let([{
+    loginResult: Call("login", [Var("email"), Var("password")])
+  }], If(Equals(Select(["token"], Var("loginResult")), false), Call("call_limit", ["failed_login", Var("email"), 3]), Do(Call("reset_logs", ["failed_login", Var("email"), Var("loginResult")])))))),
+  role: "server"
+})

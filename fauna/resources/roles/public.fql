@@ -1,0 +1,23 @@
+CreateRole({
+  name: 'public',
+  privileges: [
+    {
+      resource: Function('register'),
+      actions: {
+        call: true
+      }
+    },
+    {
+      resource: Function('login_call_limited'),
+      actions: {
+        call: true
+      }
+    },
+    {
+      resource: Function('get_all_dinos_rate_limited'),
+      actions: {
+        call: true
+      }
+    }
+  ]
+})

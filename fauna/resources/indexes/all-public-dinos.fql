@@ -1,0 +1,20 @@
+CreateIndex({
+  name: 'all_public_dinos',
+  source: {
+    collection: Collection('dinos'),
+    fields: {
+      publicRefs: Query(
+        Lambda(
+          'dino',
+          // only common dinos are public, if we return null here it won't be in the index.
+          If(Equals(Select(['data', 'rarity'], Var('dino')), 'common'), Select(['ref'], Var('dino')), null)
+        )
+      )
+    }
+  },
+  values: [
+    {
+      binding: 'publicRefs'
+    }
+  ]
+})
