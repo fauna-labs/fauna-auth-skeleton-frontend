@@ -1,0 +1,7 @@
+Update(Function("get_all_dinos"), {
+  body: Query(Lambda([], Let([{
+    match: If(HasIdentity(), If(Equals("admin", Select(["data", "type"], Get(Identity()), null)), Documents(Collection("dinos")), Difference(Documents(Collection("dinos")), Match(Index("dinos_by_rarity"), "legendary"))), Match(Index("dinos_by_rarity"), "common"))
+  }], Map(Paginate(Var("match")), Lambda(["dinoRef"], Get(Var("dinoRef"))))))),
+  role: "server",
+  data: null
+})

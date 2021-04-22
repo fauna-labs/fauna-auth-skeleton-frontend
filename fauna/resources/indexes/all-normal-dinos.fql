@@ -1,0 +1,20 @@
+CreateIndex({
+  name: 'dinos_by_type',
+  source: {
+    collection: Collection('dinos'),
+    fields: {
+      normalRefs: Query(
+        Lambda(
+          'dino',
+          // only legendary dinos are hidden from non-admin users, if we return null here it won't be in the index.
+          If(Not(Equals(Select(['data', 'rarity'], Var('dino')), 'legendary')), Select(['ref'], Var('dino')), null)
+        )
+      )
+    }
+  },
+  values: [
+    {
+      binding: 'normalRefs'
+    }
+  ]
+})

@@ -1,0 +1,12 @@
+CreateFunction({
+  name: "register",
+  body: Query(Lambda(["email", "password"], Create(Collection("accounts"), {
+    credentials: {
+      password: Var("password")
+    },
+    data: {
+      email: Var("email")
+    }
+  }))),
+  role: "server"
+})

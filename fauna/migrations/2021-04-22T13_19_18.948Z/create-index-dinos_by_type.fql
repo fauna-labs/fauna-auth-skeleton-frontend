@@ -1,0 +1,12 @@
+CreateIndex({
+  name: "dinos_by_type",
+  source: {
+    collection: Collection("dinos"),
+    fields: {
+      normalRefs: Query(Lambda("dino", If(Not(Equals(Select(["data", "rarity"], Var("dino")), "legendary")), Select(["ref"], Var("dino")), null)))
+    }
+  },
+  values: [{
+    binding: "normalRefs"
+  }]
+})

@@ -1,0 +1,7 @@
+CreateIndex({
+  name: "dinos_by_rarity",
+  source: Collection("dinos"),
+  terms: [{
+    field: ["data", "rarity"]
+  }]
+})

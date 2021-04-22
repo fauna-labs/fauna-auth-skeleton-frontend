@@ -1,0 +1,20 @@
+CreateFunction({
+  name: "login",
+  body: Query(Lambda(["email", "password"], If(Exists(Match(Index("accounts_by_email"), Var("email"))), Let([{
+    account: Get(Match(Index("accounts_by_email"), Var("email")))
+  }, {
+    accountRef: Select(["ref"], Var("account"))
+  }, {
+    authenticated: Identify(Var("accountRef"), Var("password"))
+  }], {
+    token: If(Var("authenticated"), Create(Tokens(), {
+      instance: Var("accountRef"),
+      ttl: TimeAdd(Now(), 3600, "seconds")
+    }), false),
+    account: If(Var("authenticated"), Var("account"), false)
+  }), {
+    token: false,
+    account: false
+  }))),
+  role: "server"
+})
