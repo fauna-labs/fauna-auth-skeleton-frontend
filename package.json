@@ -27,6 +27,7 @@
       "last 1 safari version"
     ]
   },
+  "license": "MIT-0",
   "devDependencies": {
     "dotenv": "^8.2.0",
     "envfile": "^5.0.0",
