@@ -18,6 +18,12 @@ CreateRole({
       actions: {
         call: true
       }
+    },
+    {
+      resource: Function('change_password'),
+      actions: {
+        call: true
+      }
     }
   ]
 })

@@ -6,9 +6,9 @@ CreateFunction({
       Let(
         {
           match: If(
-            HasIdentity(),
+            HasCurrentIdentity(),
             If(
-              Equals('admin', Select(['data', 'type'], Get(Identity()), null)),
+              Equals('admin', Select(['data', 'type'], Get(CurrentIdentity()), null)),
               // Admins can see everything
               Documents(Collection('dinos')),
               // Normal users only see non legendary

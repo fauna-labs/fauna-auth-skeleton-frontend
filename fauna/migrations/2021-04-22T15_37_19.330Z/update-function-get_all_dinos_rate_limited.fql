@@ -1,5 +1,18 @@
-Update(Function("get_all_dinos_rate_limited"), {
-  body: Query(Lambda([], Do(Call("rate_limit", ["get_dinos", If(HasIdentity(), Identity(), "anonymous"), If(HasIdentity(), 2, 10), 60000]), Call("get_all_dinos", [])))),
-  role: "server",
+Update(Function('get_all_dinos_rate_limited'), {
+  body: Query(
+    Lambda(
+      [],
+      Do(
+        Call('rate_limit', [
+          'get_dinos',
+          If(HasCurrentIdentity(), CurrentIdentity(), 'anonymous'),
+          If(HasCurrentIdentity(), 2, 10),
+          60000
+        ]),
+        Call('get_all_dinos', [])
+      )
+    )
+  ),
+  role: 'server',
   data: null
 })
