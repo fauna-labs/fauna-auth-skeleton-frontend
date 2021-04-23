@@ -13,9 +13,7 @@ class QueryManager {
     // To keep our error messages the same as our frontend solution we start with a keyless client that
     // has basically no permissions. Whereas the frontend only solution started with a bootstrap key
     // with limited permissions.
-    this.client = new fauna.Client({
-      secret: process.env.REACT_APP_LOCAL___BOOTSTRAP_KEY
-    })
+    this.client = this.getClient(process.env.REACT_APP_LOCAL___BOOTSTRAP_KEY)
   }
 
   // Calling the login endpoint which will run the login
@@ -23,9 +21,7 @@ class QueryManager {
   login(email, password) {
     return this.client.query(Call(q.Function('login_call_limited'), email, password)).then(res => {
       if (res.token) {
-        this.client = new fauna.Client({
-          secret: res.token.secret
-        })
+        this.client = this.getClient(res.token.secret)
         return res.account
       } else {
         return false
@@ -45,14 +41,21 @@ class QueryManager {
 
   logout() {
     return this.client.query(Call(q.Function('logout'), true)).then(res => {
-      this.client = new fauna.Client({
-        secret: process.env.REACT_APP_LOCAL___BOOTSTRAP_KEY
-      })
+      this.client = this.getClient(process.env.REACT_APP_LOCAL___BOOTSTRAP_KEY)
     })
   }
 
   getDinos() {
     return this.client.query(Call(q.Function('get_all_dinos_rate_limited')))
+  }
+
+  getClient(secret) {
+    const opts = { secret: secret, keepAlive: false }
+    if (process.env.FAUNADB_DOMAIN) opts.domain = process.env.FAUNADB_DOMAIN
+    if (process.env.FAUNADB_SCHEME) opts.scheme = process.env.FAUNADB_SCHEME
+    if (process.env.FAUNADB_PORT) opts.port = process.env.FAUNADB_PORT
+    opts.headers = { 'X-Fauna-Source': 'fauna-auth-skeleton-frontend' }
+    return new fauna.Client(opts)
   }
 
   async postData(url, data = {}) {
