@@ -1,6 +1,6 @@
 ## A Fauna authentication skeleton from the frontend.
 
-This repository is a basic Fauna skeleton that implements authentication authentication from the front-end with React. This implementation is keeping access tokens with a lifetime of one hour in browser memory. It is combines functionality from the following [blueprints](https://github.com/fauna-labs/fauna-blueprints): 
+This repository is a basic Fauna skeleton that implements authentication from the front-end with React. This implementation is keeping access tokens with a lifetime of one hour in browser memory. It is combines functionality from the following [blueprints](https://github.com/fauna-labs/fauna-blueprints): 
 
 - [register-login-logout](https://github.com/fauna-labs/fauna-blueprints/tree/main/official/auth/register-login-logout): basic register, login and logout functionality
 - [validation](https://github.com/fauna-labs/fauna-blueprints/tree/main/official/validation): email and password validation
