@@ -31,7 +31,7 @@
   "devDependencies": {
     "dotenv": "^8.2.0",
     "envfile": "^5.0.0",
-    "eslint": "^7.24.0",
+    "eslint": "^7.30.0",
     "eslint-config-prettier-standard": "^4.0.1",
     "esm": "^3.2.25",
     "fauna-schema-migrate": "^2.1.0",
