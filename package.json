@@ -36,7 +36,7 @@
     "esm": "^3.2.25",
     "fauna-schema-migrate": "^2.1.0",
     "prettier": "1.19.1",
-    "prettier-config-standard": "^1.0.1",
+    "prettier-config-standard": "^4.0.0",
     "readline-promise": "^1.0.4",
     "stylelint-config-prettier": "^8.0.1",
     "stylelint-prettier": "^1.1.2"
